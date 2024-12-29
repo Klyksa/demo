@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=13421342'
+      - 'POSTGRES_USER=user'
+    ports:
+      - '42447:5432'
