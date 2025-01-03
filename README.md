@@ -41,7 +41,8 @@
 3. Настройте файл с данными для подключения к БД.
 4. Запустите приложение.
    
-![image](https://github.com/user-attachments/assets/0d6253f4-b3f5-40cc-860e-1a0d5e4508c0)
+![MWrPPTQiVAA](https://github.com/user-attachments/assets/0721839d-c007-4c47-a2ec-87ac8f998ee4)
+
 
 ## Дополнительная информация
 
