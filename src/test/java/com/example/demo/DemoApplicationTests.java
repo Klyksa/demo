@@ -8,15 +8,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,22 +25,25 @@ public class DemoApplicationTests {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@Autowired
+	private DataSource dataSource;
+
 	@BeforeEach
-	public void setUp() throws SQLException {
-		try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "13421342")) {
-			Statement statement = connection.createStatement();
+	public void setUp() throws Exception {
+		try (Connection connection = dataSource.getConnection();
+			 Statement statement = connection.createStatement()) {
 
 			// Очистка данных перед тестом
-			statement.executeUpdate("DELETE FROM operations");
-			statement.executeUpdate("DELETE FROM users");
+			statement.executeUpdate("TRUNCATE TABLE operations RESTART IDENTITY CASCADE");
+			statement.executeUpdate("TRUNCATE TABLE users RESTART IDENTITY CASCADE");
 
 			// Добавление тестовых пользователей
 			statement.executeUpdate("INSERT INTO users (user_id, balance) VALUES (1, 100.0)");
 			statement.executeUpdate("INSERT INTO users (user_id, balance) VALUES (2, 50.0)");
 		}
 	}
-}
-	/*@Test
+
+	@Test
 	public void testTransferMoneyAPI() throws Exception {
 		mockMvc.perform(post("/api/wallet/transfer")
 						.param("fromUserId", "1")
@@ -49,5 +51,6 @@ public class DemoApplicationTests {
 						.param("amount", "50.0"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("Transfer successful")));
-	}*\
+	}
+}
 

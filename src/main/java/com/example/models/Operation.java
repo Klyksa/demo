@@ -1,55 +1,29 @@
 package com.example.models;
+
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.sql.Timestamp;
 
 @Getter
 @Setter
+@Entity
+@Table(name = "operations")
 public class Operation {
-    private long id; // ID операции
-    private long userId; // ID пользователя
-    private int operationType; // тип операции
-    private double amount; // сумма операции
-    private Timestamp createdAt; // дата создания операции
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    // Геттеры и сеттеры
-    public long getId() {
-        return id;
-    }
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    public void setId(long id) {
-        this.id = id;
-    }
+    @Column(name = "operation_type", nullable = false)
+    private Integer operationType;
 
-    public long getUserId() {
-        return userId;
-    }
+    @Column(name = "amount", nullable = false)
+    private Double amount;
 
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public int getOperationType() {
-        return operationType;
-    }
-
-    public void setOperationType(int operationType) {
-        this.operationType = operationType;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
+    @Column(name = "created_at", nullable = false)
+    private Timestamp createdAt;
 }
