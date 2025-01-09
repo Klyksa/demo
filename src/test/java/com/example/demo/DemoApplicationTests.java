@@ -14,6 +14,7 @@ import java.sql.Statement;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,6 +52,38 @@ public class DemoApplicationTests {
 						.param("amount", "50.0"))
 				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("Transfer successful")));
+
+		// Проверка баланса после перевода
+		mockMvc.perform(get("/api/wallet/balance")
+						.param("userId", "1"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("50.0")));
+
+		mockMvc.perform(get("/api/wallet/balance")
+						.param("userId", "2"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("100.0")));
+	}
+
+	@Test
+	public void testInsufficientFundsAPI() throws Exception {
+		mockMvc.perform(post("/api/wallet/transfer")
+						.param("fromUserId", "1")
+						.param("toUserId", "2")
+						.param("amount", "150.0"))
+				.andExpect(status().isBadRequest())
+				.andExpect(content().string(containsString("Insufficient funds")));
+
+		// Проверка, что баланс не изменился
+		mockMvc.perform(get("/api/wallet/balance")
+						.param("userId", "1"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("100.0")));
+
+		mockMvc.perform(get("/api/wallet/balance")
+						.param("userId", "2"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(containsString("50.0")));
 	}
 }
 
